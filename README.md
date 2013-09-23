@@ -1,12 +1,12 @@
 Net::Async::WAMP
 ================
 
-## About.
+### About
 
 **Net::Async::WAMP** is a Perl implementation of the [WebSocket Application
 Messaging Protocol][1].
 
-## Building from GitHub source.
+### Building from GitHub Source
 
 The **Net::Async::WAMP** distribution is managed by [Dist::Zilla][2]. Many of
 the files necessary to build this module are not included in the GitHub
