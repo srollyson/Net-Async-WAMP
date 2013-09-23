@@ -12,8 +12,8 @@ The **Net::Async::WAMP** distribution is managed by [**Dist::Zilla**][2]. Many
 of the files necessary to build this module are not included in the GitHub
 repository since they are built by **Dist::Zilla**. If you'd like to build
 **Net::Async::WAMP** from the source code available on GitHub, you'll first
-need to grab the author dependencies (assuming you've got [dzil][3] and
-[cpanm][4] installed):
+need to grab the author dependencies (assuming you've got [**dzil**][3] and
+[**cpanm**][4] installed):
 
     $ dzil authordeps | cpanm
 
