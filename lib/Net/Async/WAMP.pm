@@ -1,7 +1,13 @@
+# ABSTRACT: Perl implementation of the WebSocket Application Messaging Protocol.
 use strict;
 use warnings;
+
 package Net::Async::WAMP;
-# ABSTRACT: Perl implementation of the WebSocket Application Messaging Protocol.
+use Object::Tiny qw{};
+use Net::Async::WebSocket::Server;
+use Net::Async::WebSocket::Client;
+
+1;
 
 =head1 SYNOPSIS
 
@@ -21,7 +27,3 @@ TODO: Fill this out.
 =head1 SEE ALSO
 
 =cut
-
-use Net::Async::WebSocket 0.07;
-
-1;
