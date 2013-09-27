@@ -7,72 +7,71 @@ use Test::More;
 
 # CPAN.
 use IO::Async::Loop;
-use IO::Async::OS;
-use IO::Async::Stream;
 use IO::Async::Test;
+use IO::Socket::INET;
 use Net::Async::WebSocket::Client;
-use Protocol::WebSocket::Handshake::Server;
+use Net::Async::WebSocket::Server;
 
 # Distribution.
-use Net::Async::WAMP;
+use Net::Async::WAMP; # TODO: Create a ::Client class.
 
 #--[Test execution.]------------------------------------------------------------
-# TODO: This test is a copy of Net::Async::WebSocket's t/01client.t. Rework it
-# to be a test of Net::Async::WAMP.
 my $loop = IO::Async::Loop->new();
 testing_loop($loop);
 
-my ( $serversock, $clientsock ) = IO::Async::OS->socketpair
-  or die "Cannot socketpair - $!";
+my $serversock = IO::Socket::INET->new(
+    LocalHost => '127.0.0.1',
+    Listen    => 1,
+) or die "Cannot allocate listening socket - $@";
 
-my @frames;
+my @serverframes;
+my $acceptedclient;
+my $server = Net::Async::WebSocket::Server->new(
+    handle    => $serversock,
+    on_client => sub {
+        my ( undef, $thisclient ) = @_;
+        $acceptedclient = $thisclient;
+        $thisclient->configure(
+            # TODO: Replace the server's on_frame with a WAMP WELCOME message.
+            # http://wamp.ws/spec#welcome_message
+            on_frame => sub {
+                my ( $self, $frame ) = @_;
+                push @serverframes, $frame;
+            },
+        );
+    },
+);
+$loop->add($server);
 
+# TODO: Have two sets of client connection tests: one with WAMP PREFIX messages
+# and one without. http://wamp.ws/spec#prefix_message
+my @clientframes;
 my $client = Net::Async::WebSocket::Client->new(
     on_frame => sub {
         my ( $self, $frame ) = @_;
-        push @frames, $frame;
+        push @clientframes, $frame;
     },
 );
-
-ok( defined $client, '$client defined' );
-isa_ok( $client, "Net::Async::WebSocket::Client", '$client' );
-
 $loop->add($client);
 
 my $connected;
 $client->connect(
-    transport    => IO::Async::Stream->new( handle => $clientsock ),
-    url          => "ws://localhost/test",
-    on_connected => sub                            { $connected++ },
+    host             => $serversock->sockhost,
+    service          => $serversock->sockport,
+    url              => 'ws://localhost/test',
+    on_connected     => sub { $connected++ },
+    on_resolve_error => sub { die "Test failed early - $_[-1]" },
+    on_connect_error => sub { die "Test failed early - $_[-1]" },
 );
-
-my $h = Protocol::WebSocket::Handshake::Server->new;
-
-my $stream = "";
-wait_for_stream { $h->parse($stream); $stream = ""; $h->is_done }
-$serversock => $stream;
-
-$serversock->write( $h->to_string );
 
 wait_for { $connected };
 
-$serversock->write(
-    Protocol::WebSocket::Frame->new("Here is my message")->to_bytes );
+$client->send_frame('Here is my message');
+wait_for { @serverframes };
+is_deeply( \@serverframes, ['Here is my message'], 'received @serverframes' );
 
-wait_for { @frames };
-
-is_deeply( \@frames, ["Here is my message"], 'received @frames' );
-
-undef @frames;
-
-$client->send_frame("Here is my response");
-
-my $fb = Protocol::WebSocket::Frame->new;
-$stream = "";
-my $frame;
-wait_for_stream { $fb->append($stream); $stream = ""; $frame = $fb->next }
-$serversock => $stream;
-
-is( $frame, "Here is my response", 'responded $frame' );
+$acceptedclient->send_frame('Here is my response');
+wait_for { @clientframes };
+is_deeply( \@clientframes, ['Here is my response'], 'received @clientframes' );
 
 done_testing();
