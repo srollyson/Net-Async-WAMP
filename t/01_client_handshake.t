@@ -66,9 +66,9 @@ $client->connect(
 );
 wait_for { $connected };
 
-# Send WAMP WELCOME message from server to Net::Async::WAMP::Client.
-# TODO: Have Net::Async::WAMP::Server or some protocol module create the
-# welcome message for us.
+# Send a WAMP WELCOME message from server to Net::Async::WAMP::Client.
+# TODO: Have Net::Async::WAMP::Server or some as yet unnamed protocol module
+# create the welcome message for us.
 my $welcome_msg_uuid = Data::UUID->new()->create_str();
 my $welcome_msg_data = [ 0, $welcome_msg_uuid, 1, '01_client_handshake' ];
 my $welcome_msg_json = encode_json($welcome_msg_data);
