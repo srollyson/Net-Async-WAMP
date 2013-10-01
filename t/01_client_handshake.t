@@ -6,9 +6,11 @@ use warnings;
 use Test::More;
 
 # CPAN.
+use Data::UUID;
 use IO::Async::Loop;
 use IO::Async::Test;
 use IO::Socket::INET;
+use JSON;
 use Net::Async::WebSocket::Client;
 use Net::Async::WebSocket::Server;
 
@@ -32,8 +34,6 @@ my $server = Net::Async::WebSocket::Server->new(
         my ( undef, $thisclient ) = @_;
         $acceptedclient = $thisclient;
         $thisclient->configure(
-            # TODO: Replace the server's on_frame with a WAMP WELCOME message.
-            # http://wamp.ws/spec#welcome_message
             on_frame => sub {
                 my ( $self, $frame ) = @_;
                 push @serverframes, $frame;
@@ -43,6 +43,7 @@ my $server = Net::Async::WebSocket::Server->new(
 );
 $loop->add($server);
 
+# TODO: Replace Net::Async::WebSocket::Client with Net::Async::WAMP::Client.
 # TODO: Have two sets of client connection tests: one with WAMP PREFIX messages
 # and one without. http://wamp.ws/spec#prefix_message
 my @clientframes;
@@ -63,15 +64,25 @@ $client->connect(
     on_resolve_error => sub { die "Test failed early - $_[-1]" },
     on_connect_error => sub { die "Test failed early - $_[-1]" },
 );
-
 wait_for { $connected };
 
-$client->send_frame('Here is my message');
-wait_for { @serverframes };
-is_deeply( \@serverframes, ['Here is my message'], 'received @serverframes' );
-
-$acceptedclient->send_frame('Here is my response');
+# Send WAMP WELCOME message from server to Net::Async::WAMP::Client.
+# TODO: Have Net::Async::WAMP::Server or some protocol module create the
+# welcome message for us.
+my $welcome_msg_uuid = Data::UUID->new()->create_str();
+my $welcome_msg_data = [ 0, $welcome_msg_uuid, 1, '01_client_handshake' ];
+my $welcome_msg_json = encode_json($welcome_msg_data);
+$acceptedclient->send_frame($welcome_msg_json);
 wait_for { @clientframes };
-is_deeply( \@clientframes, ['Here is my response'], 'received @clientframes' );
+is_deeply( \@clientframes, [$welcome_msg_json],
+    'received WAMP WELCOME message' );
+
+TODO: {
+    local $TODO = 'Need to implement client handshake.';
+}
+
+# $client->send_frame('Here is my message');
+# wait_for { @serverframes };
+# is_deeply( \@serverframes, ['Here is my message'], 'received @serverframes' );
 
 done_testing();
