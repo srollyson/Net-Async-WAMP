@@ -13,7 +13,7 @@ use Net::Async::WebSocket::Client;
 use Net::Async::WebSocket::Server;
 
 # Distribution.
-use Net::Async::WAMP; # TODO: Create a ::Client class.
+use Net::Async::WAMP::Client;
 
 #--[Test execution.]------------------------------------------------------------
 my $loop = IO::Async::Loop->new();
