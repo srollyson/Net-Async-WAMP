@@ -8,6 +8,7 @@ use Test::More;
 #--[Test execution.]------------------------------------------------------------
 use_ok('Net::Async::WAMP');
 use_ok('Net::Async::WAMP::Client');
+use_ok('Net::Async::WAMP::Protocol');
 use_ok('Net::Async::WAMP::Server');
 
 done_testing();

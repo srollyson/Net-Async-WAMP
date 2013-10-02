@@ -16,6 +16,7 @@ use Net::Async::WebSocket::Server;
 
 # Distribution.
 use Net::Async::WAMP::Client;
+use Net::Async::WAMP::Protocol;
 
 #--[Test execution.]------------------------------------------------------------
 my $loop = IO::Async::Loop->new();
@@ -70,7 +71,10 @@ wait_for { $connected };
 # TODO: Have Net::Async::WAMP::Server or some as yet unnamed protocol module
 # create the welcome message for us.
 my $welcome_msg_uuid = Data::UUID->new()->create_str();
-my $welcome_msg_data = [ 0, $welcome_msg_uuid, 1, '01_client_handshake' ];
+my $welcome_msg_data = [
+    Net::Async::WAMP::Protocol::TYPE_ID_WELCOME, $welcome_msg_uuid,
+    1,                                           '01_client_handshake'
+];
 my $welcome_msg_json = encode_json($welcome_msg_data);
 $acceptedclient->send_frame($welcome_msg_json);
 wait_for { @clientframes };

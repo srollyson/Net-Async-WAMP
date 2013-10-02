@@ -1,7 +1,7 @@
 # ABSTRACT: WebSocket client module for Net::Async::WAMP.
+package Net::Async::WAMP::Client;
+
 use strict;
 use warnings;
-
-package Net::Async::WAMP::Client;
 
 1;
