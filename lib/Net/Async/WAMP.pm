@@ -4,9 +4,6 @@ package Net::Async::WAMP;
 use strict;
 use warnings;
 
-use Net::Async::WebSocket::Server;
-use Net::Async::WebSocket::Client;
-
 << '-- Excerpt from "The Way of Chuang Tzu" by Thomas Merton.';
 
 If a man is crossing a river and an empty boat collides with his own skiff,
