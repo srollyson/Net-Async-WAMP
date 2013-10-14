@@ -31,11 +31,22 @@ You can also test the distribution via:
 
     $ dzil test
 
+### Additional Tests
+
+Code coverage metrics are available using
+[**Dist::Zilla::App::Command::cover**][9]. Just run:
+
+    $ dzil cover
+
+Once `dzil cover` has been run, you will find a **cover_db** folder containing
+the code coverage metrics in the temporary module build directory (e.g.
+**.build/2OXAYzqh1_/cover_db**).
+
 ### License
 
 **Net::Async::WAMP** is Copyright © 2013 by Stephen Rollyson.
 
-**Net::Async::WAMP** is free software, licensed under the [MIT license][9]:
+**Net::Async::WAMP** is free software, licensed under the [MIT license][10]:
 
 > Permission is hereby granted, free of charge, to any person obtaining a copy
 > of this software and associated documentation files (the "Software"), to deal
@@ -55,12 +66,13 @@ You can also test the distribution via:
 > OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 > SOFTWARE.
 
-[1]: http://wamp.ws/spec
-[2]: https://metacpan.org/module/Net::Async::WAMP
-[3]: http://www.leonerd.org.uk/
-[4]: https://metacpan.org/module/Net::Async::WebSocket
-[5]: https://metacpan.org/module/Future
-[6]: http://dzil.org/
-[7]: https://metacpan.org/module/dzil
-[8]: https://metacpan.org/module/cpanm
-[9]: http://opensource.org/licenses/MIT
+[1]:  http://wamp.ws/spec
+[2]:  https://metacpan.org/module/Net::Async::WAMP
+[3]:  http://www.leonerd.org.uk/
+[4]:  https://metacpan.org/module/Net::Async::WebSocket
+[5]:  https://metacpan.org/module/Future
+[6]:  http://dzil.org/
+[7]:  https://metacpan.org/module/dzil
+[8]:  https://metacpan.org/module/cpanm
+[9]:  https://metacpan.org/module/Dist::Zilla::App::Command::cover
+[10]: http://opensource.org/licenses/MIT
